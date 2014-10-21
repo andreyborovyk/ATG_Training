@@ -84,8 +84,8 @@
 								<td><dsp:input type="text" bean="InterestsFormHandler.interestRating"></dsp:input></td>
 							</tr>
 							<tr>
-							             <dsp:input  bean="InterestsFormHandler.successURL" type="hidden" value="interests.jsp"/>
-							             <dsp:input  bean="InterestsFormHandler.errorURL" type="hidden" value="interests.jsp"/>
+								<dsp:input  bean="InterestsFormHandler.addInterestSuccessURL" type="hidden" value="interests.jsp"/>
+							     <dsp:input  bean="InterestsFormHandler.addInterestErrorURL" type="hidden" value="interests.jsp"/>
 								<td><dsp:input type="submit" value="Add interest" bean="InterestsFormHandler.add"></dsp:input></td>
 							</tr>
 							

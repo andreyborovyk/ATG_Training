@@ -53,8 +53,10 @@
 							</tr>
 							<tr>
 							             <dsp:input bean="InterestsFormHandler.interestId" type="hidden" paramvalue="interestId"/>
-							             <dsp:input  bean="InterestsFormHandler.successURL" type="hidden" value="interests.jsp"/>
-							             <dsp:input  bean="InterestsFormHandler.errorURL" type="hidden" value="interestDetails.jsp"/>
+							             <dsp:input  bean="InterestsFormHandler.editInterestSuccessURL" type="hidden" value="interests.jsp"/>
+							             <dsp:input  bean="InterestsFormHandler.editInterestErrorURL" type="hidden" value="interests.jsp"/>
+							             <dsp:input  bean="InterestsFormHandler.deleteInterestSuccessURL" type="hidden" value="interests.jsp"/>
+							             <dsp:input  bean="InterestsFormHandler.deleteInterestErrorURL" type="hidden" value="interests.jsp"/>
 								<td><dsp:input type="submit" value="Submit" bean="InterestsFormHandler.edit"></dsp:input></td>
 								<td><dsp:input type="submit" value="Delete" bean="InterestsFormHandler.delete"></dsp:input></td>
 							</tr>

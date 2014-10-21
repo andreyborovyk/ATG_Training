@@ -3,8 +3,11 @@ package dynamusic;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
+import javax.transaction.TransactionManager;
 
 import atg.droplet.GenericFormHandler;
+import atg.dtm.TransactionDemarcation;
+import atg.dtm.TransactionDemarcationException;
 import atg.repository.MutableRepository;
 import atg.repository.MutableRepositoryItem;
 import atg.repository.Repository;
@@ -20,9 +23,14 @@ public class InterestsFormHandler extends GenericFormHandler {
 	private String interestId;
 	private Repository repository;
 	private Profile profile; 
+	private TransactionManager transactionManager; 
 	
-	private String successURL;
-	private String errorURL;
+	private String addInterestSuccessURL;
+	private String addinterestErrorURL;
+	private String editInterestSuccessURL;
+	private String editInterestErrorURL;
+	private String deleteInterestSuccessURL;
+	private String deleteInterestErrorURL;
 	
 	public void setInterestName(String interestName) {
 		this.interestName = interestName;
@@ -58,58 +66,128 @@ public class InterestsFormHandler extends GenericFormHandler {
 		return profile;
 	}
 	
-	public void setSuccessURL(String successURL) {
-		this.successURL = successURL;
+	public void setAddInterestSuccessURL(String addInterestSuccessURL) {
+		this.addInterestSuccessURL = addInterestSuccessURL;
 	}
-	public String getSuccessURL() {
-		return successURL;
+	
+	public String getAddInterestSuccessURL() {
+		return addInterestSuccessURL;
 	}
-	public void setErrorURL(String errorURL) {
-		this.errorURL = errorURL;
+	
+	public void setAddinterestErrorURL(String addinterestErrorURL) {
+		this.addinterestErrorURL = addinterestErrorURL;
 	}
-	public String getErrorURL() {
-		return errorURL;
+	
+	public String getAddinterestErrorURL() {
+		return addinterestErrorURL;
+	}
+	
+	public void setEditInterestSuccessURL(String editInterestSuccessURL) {
+		this.editInterestSuccessURL = editInterestSuccessURL;
+	}
+	
+	public String getEditInterestSuccessURL() {
+		return editInterestSuccessURL;
+	}
+	
+	public void setEditInterestErrorURL(String editInterestErrorURL) {
+		this.editInterestErrorURL = editInterestErrorURL;
+	}
+	
+	public String getEditInterestErrorURL() {
+		return editInterestErrorURL;
+	}
+	
+	public void setDeleteInterestSuccessURL(String deleteInterestSuccessURL) {
+		this.deleteInterestSuccessURL = deleteInterestSuccessURL;
+	}
+	
+	public String getDeleteInterestSuccessURL() {
+		return deleteInterestSuccessURL;
+	}
+	
+	public void setDeleteInterestErrorURL(String deleteInterestErrorURL) {
+		this.deleteInterestErrorURL = deleteInterestErrorURL;
+	}
+	
+	public String getDeleteInterestErrorURL() {
+		return deleteInterestErrorURL;
+	}
+	
+	public void setTransactionManager(TransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+	
+	public TransactionManager getTransactionManager() {
+		return transactionManager;
 	}
 	
 	public boolean handleAdd(DynamoHttpServletRequest request,
-			DynamoHttpServletResponse response) throws IOException, ServletException {
-			MutableRepository mutableRepository = (MutableRepository) repository; 
+			DynamoHttpServletResponse response) throws IOException, 	ServletException {
+		MutableRepository mutableRepository = (MutableRepository) repository;
+		TransactionDemarcation td = new TransactionDemarcation();
+		try {
 			try {
+				td.begin(transactionManager, td.REQUIRED);
 				MutableRepositoryItem interest = mutableRepository.createItem("interest");
 				interest.setPropertyValue("name", interestName);
 				interest.setPropertyValue("rating", interestRating);
 				interest.setPropertyValue("user", profile.getDataSource());
 				mutableRepository.addItem(interest);
-			} catch (RepositoryException e) {
-				logDebug("problem with adding interest");
+			} finally {
+				td.end();
 			}
-			return checkFormRedirect(getSuccessURL(), null, request, response);
+		} catch (RepositoryException e) {
+			logError("problem with adding interest");
+		} catch (TransactionDemarcationException exc) {
+			logError("transaction error during adding new interest");
+		}
+		return checkFormRedirect(getAddInterestSuccessURL(), null, request,
+				response);
 	}
 	
 	public boolean handleEdit(DynamoHttpServletRequest request,
 			DynamoHttpServletResponse response) throws IOException, ServletException {
 		MutableRepository mutableRepository = (MutableRepository) repository; 
+		TransactionDemarcation td = new TransactionDemarcation();
 		try {
-			MutableRepositoryItem interest = (MutableRepositoryItem) mutableRepository.getItemForUpdate(interestId, "interest");
-			interest.setPropertyValue("name", interestName);
-			interest.setPropertyValue("rating", interestRating);
-			mutableRepository.updateItem(interest);
+			try {
+				td.begin(transactionManager, td.REQUIRED);
+				MutableRepositoryItem interest = (MutableRepositoryItem) mutableRepository
+						.getItemForUpdate(interestId, "interest");
+				interest.setPropertyValue("name", interestName);
+				interest.setPropertyValue("rating", interestRating);
+				mutableRepository.updateItem(interest);
+			} finally {
+				td.end();
+			}
 		} catch (RepositoryException e) {
-			logDebug("problem with updating interest");
+			logError("problem with updating interest");
+		} catch (TransactionDemarcationException exc) {
+			logError("transaction error during editing interest");
 		}
-		return checkFormRedirect(getSuccessURL(), null,request, response);
+		return checkFormRedirect(getEditInterestSuccessURL(), null, request,
+				response);
 	}
 	
 	public boolean handleDelete(DynamoHttpServletRequest request,
 			DynamoHttpServletResponse response) throws IOException, ServletException {
 		MutableRepository mutableRepository = (MutableRepository) repository; 
+		TransactionDemarcation td = new TransactionDemarcation();
 		try {
-			mutableRepository.removeItem(interestId, "interest");
+			try {
+				td.begin(transactionManager, td.REQUIRED);
+				mutableRepository.removeItem(interestId, "interest");
+			} finally {
+				td.end();
+			}
 		} catch (RepositoryException e) {
-			logDebug("problem with removing interest");
+			logError("problem with removing interest");
+		} catch (TransactionDemarcationException exc) {
+			logError("transaction error during adding new interest");
 		}
-		return checkFormRedirect(getSuccessURL(), null,request, response);
+		return checkFormRedirect(getDeleteInterestSuccessURL(), null, request,
+				response);
 	}
-
 
 }
