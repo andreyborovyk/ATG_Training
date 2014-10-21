@@ -1,0 +1,53 @@
+<!-- This file provides a starting point for extending the 
+     profile repository.
+
+     The comments below coincide with the instructions in the
+     lab.
+ -->
+     
+<gsa-template>
+ 
+ <item-descriptor name="user" >
+
+    <table name="dynamusic_user" type="auxiliary"
+         id-column-name="user_id">
+    	<property name="info" data-type="string"
+              column-name="info" category="dynamusic" />
+        <property name="shareProfile" data-type="boolean" 
+              column-name="share_profile" category="dynamusic" />
+    </table>
+
+	<table name="interest" type="multi" id-column-name="user">
+        <property name="interests" column-name="interest_id" data-type="set"
+                  component-item-type="interest"/>
+    </table>
+
+    <table name="dynamusic_prefgenres" type="multi"
+           id-column-name="id">
+        <property name="prefGenres"                           
+           category="dynamusic" data-type="set"
+              component-data-type="string"
+              column-name="genre"/>
+    </table>
+
+    <table name="dynamusic_viewedartists" type="multi"
+           id-column-name="user_id">
+        <property name="viewedArtists"                           
+           category="dynamusic" data-type="set"
+           component-item-type="artist"
+           column-name="artist_id"
+           repository="/dynamusic/SongsRepository"/>
+    </table>
+	
+
+ </item-descriptor>
+
+<item-descriptor name="interest">
+    <table name="interest" type="primary" id-column-name="interest_id">
+        <property name="user" column-name="user" item-type="user"/>
+        <property name="name" data-type="string"/>
+        <property name="rating" data-type="string"/>
+    </table>
+  </item-descriptor>
+
+</gsa-template>
